@@ -1,12 +1,17 @@
 import sys
+import App.logic as l
+from tabulate import tabulate
+import time as time
+
 
 
 def new_logic():
     """
         Se crea una instancia del controlador
     """
-    #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+    # Llamar la función de la lógica donde se crean las estructuras de datos
+    control = l.new_logic()
+    return control
 
 def print_menu():
     print("Bienvenido")
@@ -25,23 +30,44 @@ def load_data(control):
     """
     Carga los datos
     """
-    #TODO: Realizar la carga de datos
-    pass
+    # Realizar la carga de datos
+    filename = input("Ingrese el nombre del archivo CSV a cargar (con la ruta si es necesario): ")
+    control = l.load_data(control, filename)
+    n_data = control["id"]["size"]
+    print(f"Se cargaron {n_data} películas en el catálogo.")
+    return control
 
 
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
-    pass
+    # Realizar la función para imprimir un elemento
+    movie_data = l.get_data(control, id)
+    if movie_data:
+        print(f"Datos de la película con ID {id}:")
+        print(tabulate([movie_data.values()], movie_data.keys(), tablefmt="github"))
+    else:
+        print("No se encontró una película con ese ID.")
+
 
 def print_req_1(control):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    #  Imprimir el resultado del requerimiento 1
+    nombre_pelicula = input("Ingrese el nombre de la película: ")
+    idioma = input("Ingrese el idioma original: ")
+    tiempo_inicial = time.time()
+    resultado = l.req_1(control)
+    tiempo_final = time.time()
+    if resultado == "Película no encontrada":
+        print(resultado)
+    else:
+        print(f"Se encontró la película '{nombre_pelicula}' en el idioma '{idioma}':")
+        print(tabulate(resultado, headers="keys", tablefmt="github"))
+    print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
+
 
 
 def print_req_2(control):
@@ -80,24 +106,75 @@ def print_req_6(control):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    #  Imprimir el resultado del requerimiento 6
+    idioma = input("Ingrese el idioma deseado: ")
+    anio_inicio = int(input("Ingrese el año de inicio: "))
+    anio_fin = int(input("Ingrese el año final: "))
+    tiempo_inicial = time.time()
+    resultado = l.req_6(control)
+    tiempo_final = time.time()
+    if resultado:
+        for anio, datos in resultado.items():
+            print(f"Año: {anio}")
+            for key, value in datos.items():
+                print(f"{key}: {value}")
+            print("-------------------------------------------------------")
+    else:
+        print(f"No se encontraron resultados para el idioma '{idioma}' entre {anio_inicio} y {anio_fin}.")
+    print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
+
 
 
 def print_req_7(control):
     """
         Función que imprime la solución del Requerimiento 7 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    #  Imprimir el resultado del requerimiento 7
+    compania = input("Ingrese la compañía productora: ")
+    anio_inicio = int(input("Ingrese el año de inicio: "))
+    anio_fin = int(input("Ingrese el año final: "))
+    tiempo_inicial = time.time()
+    resultado = l.req_7(control, compania, anio_inicio, anio_fin)  # Pasar correctamente los parámetros
+    tiempo_final = time.time()
+    
+    if resultado:
+        for anio, datos in resultado.items():
+            print(f"Año: {anio}")
+            print(f"Total películas: {datos['total_peliculas']}")
+            print(f"Duración total: {datos['total_duracion']} minutos")
+            print(f"Ganancias totales: ${datos['total_ganancias']}")
+            print(f"Mejor película: {datos['mejor_pelicula'][0]} con calificación {datos['mejor_pelicula'][1]}")
+            print(f"Peor película: {datos['peor_pelicula'][0]} con calificación {datos['peor_pelicula'][1]}")
+            print("-------------------------------------------------------")
+    else:
+        print(f"No se encontraron resultados para la compañía '{compania}' entre los años {anio_inicio} y {anio_fin}.")
+    print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
+
 
 
 def print_req_8(control):
     """
         Función que imprime la solución del Requerimiento 8 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 8
-    pass
+    #  Imprimir el resultado del requerimiento 8
+    genero = input("Ingrese el género: ")
+    anio_inicio = int(input("Ingrese el año de inicio: "))
+    tiempo_inicial = time.time()
+    resultado = l.req_8(control, genero, anio_inicio)  # Pasar correctamente los parámetros
+    tiempo_final = time.time()
+    
+    if resultado:
+        for anio, datos in resultado.items():
+            print(f"Año: {anio}")
+            print(f"Total películas: {datos['total_peliculas']}")
+            print(f"Duración total: {datos['total_duracion']} minutos")
+            print(f"Ganancias totales: ${datos['total_ganancias']}")
+            print(f"Mejor película: {datos['mejor_pelicula'][0]} con calificación {datos['mejor_pelicula'][1]}")
+            print(f"Peor película: {datos['peor_pelicula'][0]} con calificación {datos['peor_pelicula'][1]}")
+            print("-------------------------------------------------------")
+    else:
+        print(f"No se encontraron resultados para el género '{genero}' desde el año {anio_inicio}.")
+    print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
 
 
 # Se crea la lógica asociado a la vista
