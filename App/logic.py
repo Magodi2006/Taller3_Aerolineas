@@ -161,7 +161,7 @@ def req_4(catalog, be, start_date, end_date):
             date = datetime.date(int(year), int(month), int(day))
             if couple["value"]["status"].lower() == be.lower() and (start_date<=date<= end_date):
                 lt.add_last(id_filtered_movies, couple["key"])
-                total_duration += float(couple["value"]["runtime"]) if movie["runtime"] not in ["", None, "Unknown"] else 0
+                total_duration += float(couple["value"]["runtime"]) if couple["value"]["runtime"] not in ["", None, "Unknown"] else 0
     for key in id_filtered_movies["elements"]:
         lt.add_last(ans, get_data(catalog, key, requirements))
     """"    
@@ -180,7 +180,6 @@ def req_4(catalog, be, start_date, end_date):
         average_duration = 0
     return id_filtered_movies["size"], average_duration, ans, requirements
 
-
 def req_5(catalog):
     """
     Retorna el resultado del requerimiento 5
@@ -188,44 +187,44 @@ def req_5(catalog):
     # TODO: Modificar el requerimiento 5
     pass
 
-def req_6(catalog):
+def req_6(catalog, language, start_year, end_year):
     """
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
-        result = []
-    resultado = {}
+    result = lt.new_list()
     for couple in catalog["table"]["elements"]:
-        original_language = couple["value"]["original_language"]
-        date = couple["value"]["release_date"]
-        
-        if date != "undefined":
-            year = int(date.split('-')[0])
-            if original_language == language and start_year <= year <= end_year:
-                if year not in resultado:
-                    year = {
-                        'total_peliculas': 0,
-                        'total_duracion': 0,
-                        'total_ganancias': 0,
-                        'mejor_pelicula': None,
-                        'peor_pelicula': None
-                    }
-                duration = couple["value"]["runtime"]
-                earnings = couple["value"]["earnings"]
-                
-                year['total_peliculas'] += 1
-                year['total_duracion'] += float(duration)
-                year['total_ganancias'] += earnings
-                
-                calificacion = float(lt.get_element(catalog['vote_average'], i))
-                if calificacion > resultado[anio]['mejor_pelicula'][1]:
-                    resultado[anio]['mejor_pelicula'] = (lt.get_element(catalog['title'], i), calificacion)
-                if calificacion < resultado[anio]['peor_pelicula'][1]:
-                    resultado[anio]['peor_pelicula'] = (lt.get_element(catalog['title'], i), calificacion)
-    
-
-    
-    return resultado
+        if couple["key"] != None:
+            original_language = couple["value"]["original_language"]
+            date = couple["value"]["release_date"]
+            
+            if date != "undefined":
+                year = int(date.split('-')[0])
+                if original_language == language and start_year <= year <= end_year:
+                    if year not in result:
+                        year = {
+                            'total_peliculas': 0,
+                            'total_duracion': 0,
+                            'total_ganancias': 0,
+                            'mejor_pelicula': [None, float(couple["value"]["vote_average"])-1],
+                            'peor_pelicula': [None, float(couple["value"]["vote_average"])+1]
+                        }
+                        lt.add_last(result, year)
+                    duration = couple["value"]["runtime"]
+                    earnings = couple["value"]["earnings"]
+                    
+                    year['total_peliculas'] += 1
+                    year['total_duracion'] += float(duration)
+                    year['total_ganancias'] += earnings
+                    
+                    calificacion = float(couple["value"]["vote_average"])
+                    if calificacion > year['mejor_pelicula'][1]:
+                        year['mejor_pelicula'][1] = calificacion 
+                        year["mejor_pelicula"][0] = couple["value"]["title"]
+                    if calificacion < year['peor_pelicula'][1]:
+                        year['peor_pelicula'][1] = calificacion
+                        year["peor_pelicula"][0] = couple["value"]["title"]
+    return result
 
 
 def req_7(catalog):

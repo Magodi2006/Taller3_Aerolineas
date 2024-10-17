@@ -100,7 +100,7 @@ def print_req_4(control):
     start_date = input("Ingrese la fecha de inicio: ")
     end_date = input("Ingrese la fecha final: ")
     tiempo_inicial = time.time()
-    size, average_duration, info, requirements = l.req_3(control, be, start_date, end_date)
+    size, average_duration, info, requirements = l.req_4(control, be, start_date, end_date)
     tiempo_final = time.time()
     print(f"Se encontraron {size} películas que cumplen los criterios, con una duración promedio de {average_duration} minutos")
     print(tabulate(info["elements"], tablefmt="github" ))
@@ -119,20 +119,17 @@ def print_req_6(control):
         Función que imprime la solución del Requerimiento 6 en consola
     """
     #  Imprimir el resultado del requerimiento 6
-    idioma = input("Ingrese el idioma deseado: ")
-    anio_inicio = int(input("Ingrese el año de inicio: "))
-    anio_fin = int(input("Ingrese el año final: "))
+    language = input("Ingrese el idioma deseado: ")
+    start_year = int(input("Ingrese el año de inicio: "))
+    end_year = int(input("Ingrese el año final: "))
     tiempo_inicial = time.time()
-    resultado = l.req_6(control)
+    result = l.req_6(control, language, start_year, end_year)
+    headers = [""]
     tiempo_final = time.time()
-    if resultado:
-        for anio, datos in resultado.items():
-            print(f"Año: {anio}")
-            for key, value in datos.items():
-                print(f"{key}: {value}")
-            print("-------------------------------------------------------")
+    if result["size"] != 0:
+        print(tabulate(result["elements"], headers, tablefmt="github"))
     else:
-        print(f"No se encontraron resultados para el idioma '{idioma}' entre {anio_inicio} y {anio_fin}.")
+        print(f"No se encontraron resultados para el idioma '{language}' entre {start_year} y {end_year}.")
     print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
 
 
