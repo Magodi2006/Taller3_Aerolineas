@@ -1,9 +1,37 @@
 import time
+from DataStructures.Map import map_linear_probing as lp
+from DataStructures.List import array_list as lt
 
 def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
+    catalog = { "id" : None,
+                "title" : None,
+                "original_language" : None,
+                "release_date": None,
+                "revenue" : None,
+                "runtime" : None,
+                "status" : None,
+                "vote_average" : None,
+                "vote_count" : None,
+                "budget" : None,
+                "genres" : None,
+                "production_companies" : None
+                }
+    
+    catalog["id"] = lt.new_list()
+    catalog["title"] = lt.new_list()
+    catalog["original_language"] = lt.new_list()
+    catalog["release_date"] = lt.new_list()
+    catalog["revenue"] = lt.new_list()
+    catalog["runtime"] = lt.new_list()
+    catalog["status"] = lt.new_list()
+    catalog["vote_average"] = lt.new_list()
+    catalog["vote_count"] = lt.new_list()
+    catalog["budget"] = lt.new_list()
+    catalog["genres"] = lt.new_list()
+    catalog["production_companies"] = lt.new_list()
     #TODO: Llama a las funciónes de creación de las estructuras de datos
     pass
 
