@@ -9,7 +9,7 @@ def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
-    catalog = lp.new_map(1000, 0.7)
+    catalog = lp.new_map(15000, 0.7)
     
     return catalog
 
@@ -51,7 +51,7 @@ def load_data(catalog, filename):
                 for companie in json.loads(movie["production_companies"]):
                     lt.add_last(value["production_companies"], [companie["id"], companie["name"]])
             if resource == "earnings":
-                if movie["budget"] not in [None, "", 0] and movie["revenue"] not in [None, "", 0]:
+                if movie["budget"] not in [None, ""] and movie["revenue"] not in [None, ""]:
                     value["earnings"] = float(movie["revenue"]) - float(movie["budget"])
                 else:
                     value["earnings"] = "Undefined"
@@ -61,58 +61,39 @@ def load_data(catalog, filename):
 
 # Funciones de consulta sobre el catálogo
 
-def get_data(catalog, id):
+def get_data(catalog, id, requirements):
     """
     Retorna un dato por su ID.
     """
     #TODO: Consulta en las Llamar la función del modelo para obtener un dato
-    pos = lt.is_present(catalog["id"], id)
-    if pos != -1:
-        movie_data = {
-            "id": lt.get_element(catalog["id"], pos),
-            "title": lt.get_element(catalog["title"], pos),
-            "original_language": lt.get_element(catalog["original_language"], pos),
-            "release_date": lt.get_element(catalog["release_date"], pos),
-            "revenue": lt.get_element(catalog["revenue"], pos),
-            "runtime": lt.get_element(catalog["runtime"], pos),
-            "status": lt.get_element(catalog["status"], pos),
-            "vote_average": lt.get_element(catalog["vote_average"], pos),
-            "vote_count": lt.get_element(catalog["vote_count"], pos),
-            "budget": lt.get_element(catalog["budget"], pos),
-            "genres": lt.get_element(catalog["genres"], pos),
-            "production_companies": lt.get_element(catalog["production_companies"], pos)
-        }
-        return movie_data
-    else:
-        return None
+    present = lp.contains(catalog, id)
+    ans = lt.new_list()
+    print(lp.contains(catalog, "tt0085204"))
+    if present:
+        temp = lp.get(catalog, id)
+        print(temp)
+        for requirement in requirements:
+            lt.add_last(ans, temp[requirement])
+        return ans
+    return ans
 
-
-def req_1(catalog):
+def req_1(catalog, name, language):
     """
     Retorna el resultado del requerimiento 1
     """
     # TODO: Modificar el requerimiento 1
-    resultado = []
-    size = lt.size(catalog['title'])
-    
-    for i in range(size):
-        titulo = lt.get_element(catalog['title'], i)
-        lang = lt.get_element(catalog['original_language'], i)
+    requirements = ["runtime", "release_date", "revenue", "budget", "earnings", "vote_average", "original_language"]
+    filtro = lt.new_list()
+    for movie in catalog["table"]["elements"]:
+        if movie["value"] != None:
+            if movie["value"]["original_language"] == language and movie["value"]["title"].lower() == name.lower():
+                lt.add_last(filtro, movie["key"])
+    for key in filtro["elements"]:
+        print(key)
+        ans = get_data(catalog, key, requirements)
         
-        if titulo == nombre_pelicula and lang == idioma:
-            pelicula = {
-                'titulo_original': titulo,
-                'duracion': lt.get_element(catalog['runtime'], i),
-                'fecha_publicacion': lt.get_element(catalog['release_date'], i),
-                'presupuesto': lt.get_element(catalog['budget'], i),
-                'ingresos': lt.get_element(catalog['revenue'], i),
-                'ganancias': float(lt.get_element(catalog['revenue'], i)) - float(lt.get_element(catalog['budget'], i)),
-                'calificacion': lt.get_element(catalog['vote_average'], i),
-                'idioma_original': lang
-            }
-            resultado.append(pelicula)
+    return ans, filtro["size"], requirements
     
-    return resultado if resultado else "Película no encontrada"
 
 def req_2(catalog):
     """
@@ -122,21 +103,82 @@ def req_2(catalog):
     pass
 
 
-def req_3(catalog):
+def req_3(catalog, language, start_date, end_date):
     """
     Retorna el resultado del requerimiento 3
     """
     # TODO: Modificar el requerimiento 3
-    pass
+    requirements = ["release_date", "title", "budget", "revenue", "earnings", "runtime", "vote_average", "status"]
+    start_year, star_month, start_day = start_date.split("-")
+    start_date = datetime.date(int(start_year), int(star_month), int(start_day))
+    end_year, end_month, end_day = end_date.split("-")
+    end_date = datetime.date(int(end_year), int(end_month), int(end_day))
+    id_filtered_movies = lt.new_list()
+    total_duration = 0
+    ans = lt.new_list()
+    for couple in catalog["table"]["elements"]:
+        if couple["key"] != None:
+            year, month, day = couple["value"]["release_date"].split("-")
+            date = datetime.date(int(year), int(month), int(day))
+            if couple["value"]["original_language"]==language and (start_date<=date<= end_date):
+                lt.add_last(id_filtered_movies, couple["key"])
+                total_duration += float(couple["value"]["runtime"])
+    for key in id_filtered_movies["elements"]:
+        lt.add_last(ans, get_data(catalog, key, requirements))
+    """"    
+    if id_filtered_movies["size"]>20:
+        size = id_filtered_movies["size"]
+        search = [0,1,2,3,4,size-5,size-4,size-3,size-2,size-1]
+        for i in search:
+            lt.add_last(ans, get_data(catalog, requirements))
+    else:
+        for i in id_filtered_movies["elements"]:
+            lt.add_last(ans, get_data(catalog, catalog["id"]["elements"][i], requirements))
+    """
+    if id_filtered_movies["size"] != 0:
+        average_duration = total_duration/id_filtered_movies["size"]
+    else:
+        average_duration = 0
+    return id_filtered_movies["size"], average_duration, ans, requirements
 
 
-def req_4(catalog):
+def req_4(catalog, be, start_date, end_date):
     """
     Retorna el resultado del requerimiento 4
     """
     # TODO: Modificar el requerimiento 4
-    pass
-
+    requirements = ["release_date", "title", "budget", "revenue", "earnings", "runtime", "vote_average", "original_language"]
+    start_year, star_month, start_day = start_date.split("-")
+    start_date = datetime.date(int(start_year), int(star_month), int(start_day))
+    end_year, end_month, end_day = end_date.split("-")
+    end_date = datetime.date(int(end_year), int(end_month), int(end_day))
+    id_filtered_movies = lt.new_list()
+    total_duration = 0
+    ans = lt.new_list()
+    for couple in catalog["table"]["elements"]:
+        if couple["key"] != None:
+            year, month, day = couple["value"]["release_date"].split("-")
+            date = datetime.date(int(year), int(month), int(day))
+            if couple["value"]["status"].lower() == be.lower() and (start_date<=date<= end_date):
+                lt.add_last(id_filtered_movies, couple["key"])
+                total_duration += float(couple["value"]["runtime"]) if couple["value"]["runtime"] not in ["", None, "Unknown"] else 0
+    for key in id_filtered_movies["elements"]:
+        lt.add_last(ans, get_data(catalog, key, requirements))
+    """"    
+    if id_filtered_movies["size"]>20:
+        size = id_filtered_movies["size"]
+        search = [0,1,2,3,4,size-5,size-4,size-3,size-2,size-1]
+        for i in search:
+            lt.add_last(ans, get_data(catalog, requirements))
+    else:
+        for i in id_filtered_movies["elements"]:
+            lt.add_last(ans, get_data(catalog, catalog["id"]["elements"][i], requirements))
+    """
+    if id_filtered_movies["size"] != 0:
+        average_duration = total_duration/id_filtered_movies["size"]
+    else:
+        average_duration = 0
+    return id_filtered_movies["size"], average_duration, ans, requirements
 
 def req_5(catalog):
     """
@@ -145,43 +187,44 @@ def req_5(catalog):
     # TODO: Modificar el requerimiento 5
     pass
 
-def req_6(catalog):
+def req_6(catalog, language, start_year, end_year):
     """
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
-    resultado = {}
-    size = lt.size(catalog['title'])
-    
-    for i in range(size):
-        lang = lt.get_element(catalog['original_language'], i)
-        fecha = lt.get_element(catalog['release_date'], i)
-        
-        if fecha != "undefined":
-            anio = int(fecha.split('-')[0])
-            if lang == idioma and anio_inicio <= anio <= anio_fin:
-                if anio not in resultado:
-                    resultado[anio] = {
-                        'total_peliculas': 0,
-                        'total_duracion': 0,
-                        'total_ganancias': 0,
-                        'mejor_pelicula': ('', -float('inf')),
-                        'peor_pelicula': ('', float('inf'))
-                    }
-                duracion = lt.get_element(catalog['runtime'], i)
-                ganancias = float(lt.get_element(catalog['revenue'], i)) - float(lt.get_element(catalog['budget'], i))
-                
-                resultado[anio]['total_peliculas'] += 1
-                resultado[anio]['total_duracion'] += float(duracion)
-                resultado[anio]['total_ganancias'] += ganancias
-                
-                calificacion = float(lt.get_element(catalog['vote_average'], i))
-                if calificacion > resultado[anio]['mejor_pelicula'][1]:
-                    resultado[anio]['mejor_pelicula'] = (lt.get_element(catalog['title'], i), calificacion)
-                if calificacion < resultado[anio]['peor_pelicula'][1]:
-                    resultado[anio]['peor_pelicula'] = (lt.get_element(catalog['title'], i), calificacion)
-    
-    return resultado
+    result = lt.new_list()
+    for couple in catalog["table"]["elements"]:
+        if couple["key"] != None:
+            original_language = couple["value"]["original_language"]
+            date = couple["value"]["release_date"]
+            
+            if date != "undefined":
+                year = int(date.split('-')[0])
+                if original_language == language and start_year <= year <= end_year:
+                    if year not in result:
+                        year = {
+                            'total_peliculas': 0,
+                            'total_duracion': 0,
+                            'total_ganancias': 0,
+                            'mejor_pelicula': [None, float(couple["value"]["vote_average"])-1],
+                            'peor_pelicula': [None, float(couple["value"]["vote_average"])+1]
+                        }
+                        lt.add_last(result, year)
+                    duration = couple["value"]["runtime"]
+                    earnings = couple["value"]["earnings"]
+                    
+                    year['total_peliculas'] += 1
+                    year['total_duracion'] += float(duration)
+                    year['total_ganancias'] += earnings
+                    
+                    calificacion = float(couple["value"]["vote_average"])
+                    if calificacion > year['mejor_pelicula'][1]:
+                        year['mejor_pelicula'][1] = calificacion 
+                        year["mejor_pelicula"][0] = couple["value"]["title"]
+                    if calificacion < year['peor_pelicula'][1]:
+                        year['peor_pelicula'][1] = calificacion
+                        year["peor_pelicula"][0] = couple["value"]["title"]
+    return result
 
 
 def req_7(catalog):
