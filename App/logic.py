@@ -193,36 +193,37 @@ def req_6(catalog):
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
+        result = []
     resultado = {}
-    size = lt.size(catalog['title'])
-    
-    for i in range(size):
-        lang = lt.get_element(catalog['original_language'], i)
-        fecha = lt.get_element(catalog['release_date'], i)
+    for couple in catalog["table"]["elements"]:
+        original_language = couple["value"]["original_language"]
+        date = couple["value"]["release_date"]
         
-        if fecha != "undefined":
-            anio = int(fecha.split('-')[0])
-            if lang == idioma and anio_inicio <= anio <= anio_fin:
-                if anio not in resultado:
-                    resultado[anio] = {
+        if date != "undefined":
+            year = int(date.split('-')[0])
+            if original_language == language and start_year <= year <= end_year:
+                if year not in resultado:
+                    year = {
                         'total_peliculas': 0,
                         'total_duracion': 0,
                         'total_ganancias': 0,
-                        'mejor_pelicula': ('', -float('inf')),
-                        'peor_pelicula': ('', float('inf'))
+                        'mejor_pelicula': None,
+                        'peor_pelicula': None
                     }
-                duracion = lt.get_element(catalog['runtime'], i)
-                ganancias = float(lt.get_element(catalog['revenue'], i)) - float(lt.get_element(catalog['budget'], i))
+                duration = couple["value"]["runtime"]
+                earnings = couple["value"]["earnings"]
                 
-                resultado[anio]['total_peliculas'] += 1
-                resultado[anio]['total_duracion'] += float(duracion)
-                resultado[anio]['total_ganancias'] += ganancias
+                year['total_peliculas'] += 1
+                year['total_duracion'] += float(duration)
+                year['total_ganancias'] += earnings
                 
                 calificacion = float(lt.get_element(catalog['vote_average'], i))
                 if calificacion > resultado[anio]['mejor_pelicula'][1]:
                     resultado[anio]['mejor_pelicula'] = (lt.get_element(catalog['title'], i), calificacion)
                 if calificacion < resultado[anio]['peor_pelicula'][1]:
                     resultado[anio]['peor_pelicula'] = (lt.get_element(catalog['title'], i), calificacion)
+    
+
     
     return resultado
 
