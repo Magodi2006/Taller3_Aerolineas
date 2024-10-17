@@ -349,5 +349,7 @@ def rehash(my_map):
     my_map['table'] = new_map["table"]
     my_map['capacity'] = new_capacity
     my_map['current_factor'] = my_map['size'] / new_capacity
+    my_map["scale"] = new_map["scale"]
+    my_map["shift"] = new_map["shift"]
 
     return my_map
