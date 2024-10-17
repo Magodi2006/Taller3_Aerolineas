@@ -31,10 +31,9 @@ def load_data(control):
     Carga los datos
     """
     # Realizar la carga de datos
-    filename = input("Ingrese el nombre del archivo CSV a cargar (con la ruta si es necesario): ")
-    control = l.load_data(control, filename)
-    n_data = control["id"]["size"]
-    print(f"Se cargaron {n_data} películas en el catálogo.")
+    filename = input("Ingrese el nombre del archivo CSV a cargar: ")
+    control = l.load_data(control, "Data/Challenge-2/movies-small.csv")
+    print(f"Se cargaron {control["size"]} películas en el catálogo.")
     return control
 
 

@@ -9,59 +9,8 @@ def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
-    catalog = { "id" : None,
-                "title" : None,
-                "original_language" : None,
-                "release_date": None,
-                "revenue" : None,
-                "runtime" : None,
-                "status" : None,
-                "vote_average" : None,
-                "vote_count" : None,
-                "budget" : None,
-                "genres" : None,
-                "production_companies" : None
-                }
+    catalog = lp.new_map(1000, 0.7)
     
-    catalog["id"] = lt.new_list()
-    catalog["title"] = lt.new_list()
-    catalog["original_language"] = lt.new_list()
-    catalog["release_date"] = lt.new_list()
-    catalog["revenue"] = lt.new_list()
-    catalog["runtime"] = lt.new_list()
-    catalog["status"] = lt.new_list()
-    catalog["vote_average"] = lt.new_list()
-    catalog["vote_count"] = lt.new_list()
-    catalog["budget"] = lt.new_list()
-    catalog["genres"] = lt.new_list()
-    catalog["production_companies"] = lt.new_list()
-    #TODO: Llama a las funciónes de creación de las estructuras de datos
-    catalog = { "id" : None,
-                "title" : None,
-                "original_language" : None,
-                "release_date": None,
-                "revenue" : None,
-                "runtime" : None,
-                "status" : None,
-                "vote_average" : None,
-                "vote_count" : None,
-                "budget" : None,
-                "genres" : None,
-                "production_companies" : None
-                }
-    
-    catalog["id"] = lt.new_list()
-    catalog["title"] = lt.new_list()
-    catalog["original_language"] = lt.new_list()
-    catalog["release_date"] = lt.new_list()
-    catalog["revenue"] = lt.new_list()
-    catalog["runtime"] = lt.new_list()
-    catalog["status"] = lt.new_list()
-    catalog["vote_average"] = lt.new_list()
-    catalog["vote_count"] = lt.new_list()
-    catalog["budget"] = lt.new_list()
-    catalog["genres"] = lt.new_list()
-    catalog["production_companies"] = lt.new_list()
     return catalog
 
 
@@ -74,28 +23,40 @@ def load_data(catalog, filename):
     # TODO: Realizar la carga de datos
     movies = csv.DictReader(open(filename, encoding='utf-8'))
     for movie in movies:
-        
-        genres_list = json.loads(movie["genres"])
-        genres_associated = [{"id": genre["id"], "name": genre["name"]} if genre else {"id": 0, "name": "bono de 0.5"} for genre in genres_list]
-        lt.add_last(catalog["genres"], genres_associated)
-
-        
-        company_list = json.loads(movie["production_companies"])
-        company_associated = [{"id": company["id"], "name": company["name"]} if company else {"id": 0, "name": "bono de 0.5"} for company in company_list]
-        lt.add_last(catalog["production_companies"], company_associated)
-        
-        
-        lt.add_last(catalog["id"], movie.get("id", "undefined"))
-        lt.add_last(catalog["title"], movie.get("title", "undefined"))
-        lt.add_last(catalog["original_language"], movie.get("original_language", "undefined"))
-        lt.add_last(catalog["release_date"], movie.get("release_date", "undefined"))
-        lt.add_last(catalog["revenue"], movie.get("revenue", "undefined"))
-        lt.add_last(catalog["runtime"], movie.get("runtime", "undefined"))
-        lt.add_last(catalog["status"], movie.get("status", "undefined"))
-        lt.add_last(catalog["vote_average"], movie.get("vote_average", "undefined"))
-        lt.add_last(catalog["vote_count"], movie.get("vote_count", "undefined"))
-        lt.add_last(catalog["budget"], movie.get("budget", "undefined"))
-
+        key = movie["id"]
+        value = { "id" : None,
+                "title" : None,
+                "original_language" : None,
+                "release_date": None,
+                "revenue" : None,
+                "runtime" : None,
+                "status" : None,
+                "vote_average" : None,
+                "vote_count" : None,
+                "budget" : None,
+                "genres" : lt.new_list(),
+                "production_companies" : lt.new_list(),
+                "earnings" : None
+                }
+        for resource in value:
+            if resource != "genres"and resource != "production_companies" and resource != "earnings":
+                if movie[resource] is not None or movie["value"] != "":
+                    value[resource] = movie[resource]
+                else:
+                    value[resource] = "Unknown"
+            if resource == "genres":
+                for genre in json.loads(movie["genres"]):
+                    lt.add_last(value["genres"], [genre["id"], genre["name"]])
+            if resource == "production_companies":
+                for companie in json.loads(movie["production_companies"]):
+                    lt.add_last(value["production_companies"], [companie["id"], companie["name"]])
+            if resource == "earnings":
+                if movie["budget"] not in [None, "", 0] and movie["revenue"] not in [None, "", 0]:
+                    value["earnings"] = float(movie["revenue"]) - float(movie["budget"])
+                else:
+                    value["earnings"] = "Undefined"
+        lp.put(catalog, key, value)
+    print(catalog)
     return catalog
 
 # Funciones de consulta sobre el catálogo
