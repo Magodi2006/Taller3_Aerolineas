@@ -226,12 +226,13 @@ def req_6(catalog, language, start_year, end_year):
     return result
 
 
-def req_7(catalog):
+def req_7(catalog,compania,anio_inicio,anio_fin):
     """
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
     resultado = {}
+    print(catalog.keys())
     for pelicula in catalog['peliculas']:
         anio = int(pelicula['release_date'].split('-')[0])
         if compania in pelicula['production_companies'] and anio_inicio <= anio <= anio_fin:
@@ -254,7 +255,7 @@ def req_7(catalog):
     return resultado
 
 
-def req_8(catalog):
+def req_8(catalog,genero,anio_inicio):
     """
     Retorna el resultado del requerimiento 8
     """

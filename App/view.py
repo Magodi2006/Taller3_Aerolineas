@@ -1,5 +1,9 @@
 import sys
-import App.logic as l
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from App import logic as l
 from tabulate import tabulate
 import time as time
 
@@ -33,7 +37,7 @@ def load_data(control):
     # Realizar la carga de datos
 
     control = l.load_data(control, "Data/Challenge-2/movies-small.csv")
-    print(f"Se cargaron {control["size"]} películas en el catálogo.")
+    print(f'Se cargaron {control["size"]} películas en el catálogo.')
     return control
 
 
@@ -84,12 +88,14 @@ def print_req_3(control):
     # TODO: Imprimir el resultado del requerimiento 3
     language = input("Ingrese el idioma original: ")
     start_date = input("Ingrese la fecha de inicio: ")
-    end_date = input("Ingrese la fecha final: ")
+    end_date = input("Ingrese la fecha final: ")    
     tiempo_inicial = time.time()
     size, average_duration, info, requirements = l.req_3(control, language, start_date, end_date)
     tiempo_final = time.time()
     print(f"Se encontraron {size} películas que cumplen los criterios, con una duración promedio de {average_duration} minutos")
     print(tabulate(info["elements"], tablefmt="github" ))
+    print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
+
 
 def print_req_4(control):
     """
@@ -104,6 +110,8 @@ def print_req_4(control):
     tiempo_final = time.time()
     print(f"Se encontraron {size} películas que cumplen los criterios, con una duración promedio de {average_duration} minutos")
     print(tabulate(info["elements"], tablefmt="github" ))
+    print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
+
 
 
 def print_req_5(control):
@@ -243,3 +251,5 @@ def main():
         else:
             print("Opción errónea, vuelva a elegir.\n")
     sys.exit(0)
+if __name__ == "__main__":
+    main()
