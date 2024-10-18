@@ -37,6 +37,21 @@ def load_data(control):
     # Realizar la carga de datos
 
     control = l.load_data(control, "Data/Challenge-2/movies-small.csv")
+    f = 0
+    g=0
+    
+    for i in range(control["capacity"]):
+        if control["table"]["elements"][i]["key"] is not None and f < 5:
+            print_data(control, control["table"]["elements"][i]["key"])
+            f += 1
+        if f >= 5:
+            break
+    for i in range(control["capacity"] - 1, -1, -1):  # Iterar hacia atrás
+        if control["table"]["elements"][i]["key"] is not None and g < 5:
+            print_data(control, control["table"]["elements"][i]["key"])
+            g += 1
+        if g >= 5:
+            break
     print(f'Se cargaron {control["size"]} películas en el catálogo.')
     return control
 
@@ -46,10 +61,12 @@ def print_data(control, id):
         Función que imprime un dato dado su ID
     """
     # Realizar la función para imprimir un elemento
-    movie_data = l.get_data(control, id)
+    requirements = ["id", "title", "original_language", "release_date", "revenue", "runtime" ,"status", "vote_average" ,"vote_count", "budget", "genres", "production_companies", "earnings"]
+    movie_data = l.get_data(control, id, requirements)
     if movie_data:
         print(f"Datos de la película con ID {id}:")
-        print(tabulate([movie_data.values()], movie_data.keys(), tablefmt="github"))
+        print(requirements)
+        print(tabulate([movie_data.values()], tablefmt="github"))
     else:
         print("No se encontró una película con ese ID.")
 

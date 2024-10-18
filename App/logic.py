@@ -73,10 +73,8 @@ def get_data(catalog, id, requirements):
     #TODO: Consulta en las Llamar la función del modelo para obtener un dato
     present = lp.contains(catalog, id)
     ans = lt.new_list()
-    print(lp.contains(catalog, "tt0085204"))
     if present:
         temp = lp.get(catalog, id)
-        print(temp)
         for requirement in requirements:
             lt.add_last(ans, temp[requirement])
         return ans
@@ -274,7 +272,6 @@ def req_8(catalog, name_genre, start_year):
             year = int(couple["value"]['release_date'].split('-')[0])
             for genre in couple["value"]["genres"]["elements"]:
                 if name_genre.lower() == genre[1].lower() and year >= start_year and couple["value"]["status"]=="Released":
-                    print("Te falta calle")
                     if year not in result:
                         result[year] = {
                             'total_peliculas': 0,
