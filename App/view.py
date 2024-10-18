@@ -92,6 +92,7 @@ def print_req_3(control):
     size, average_duration, info, requirements = l.req_3(control, language, start_date, end_date)
     tiempo_final = time.time()
     print(f"Se encontraron {size} películas que cumplen los criterios, con una duración promedio de {average_duration} minutos")
+    print(requirements)
     print(tabulate(info["elements"], tablefmt="github" ))
     print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
 
@@ -108,6 +109,7 @@ def print_req_4(control):
     size, average_duration, info, requirements = l.req_4(control, be, start_date, end_date)
     tiempo_final = time.time()
     print(f"Se encontraron {size} películas que cumplen los criterios, con una duración promedio de {average_duration} minutos")
+    print(requirements)
     print(tabulate(info["elements"], tablefmt="github" ))
     print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
 

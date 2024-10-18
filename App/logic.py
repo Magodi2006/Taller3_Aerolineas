@@ -128,20 +128,19 @@ def req_3(catalog, language, start_date, end_date):
             date = datetime.date(int(year), int(month), int(day))
             if couple["value"]["original_language"]==language and (start_date<=date<= end_date):
                 lt.add_last(id_filtered_movies, couple["key"])
-                total_duration += float(couple["value"]["runtime"])
-    for key in id_filtered_movies["elements"]:
-        lt.add_last(ans, get_data(catalog, key, requirements))
+                runtime = float(couple["value"]["runtime"]) if couple["value"]["runtime"] not in [None, "", "Unknown"] else 0
+                total_duration += runtime
 
-    """"    
+
     if id_filtered_movies["size"]>20:
         size = id_filtered_movies["size"]
         search = [0,1,2,3,4,size-5,size-4,size-3,size-2,size-1]
         for i in search:
-            lt.add_last(ans, get_data(catalog, requirements))
+            lt.add_last(ans, get_data(catalog, id_filtered_movies["elements"][i], requirements))
     else:
-        for i in id_filtered_movies["elements"]:
-            lt.add_last(ans, get_data(catalog, catalog["id"]["elements"][i], requirements))
-    """
+        for key in id_filtered_movies["elements"]:
+            lt.add_last(ans, get_data(catalog, key, requirements))
+
     if id_filtered_movies["size"] != 0:
         average_duration = total_duration/id_filtered_movies["size"]
     else:
@@ -169,18 +168,16 @@ def req_4(catalog, be, start_date, end_date):
             if couple["value"]["status"].lower() == be.lower() and (start_date<=date<= end_date):
                 lt.add_last(id_filtered_movies, couple["key"])
                 total_duration += float(couple["value"]["runtime"]) if couple["value"]["runtime"] not in ["", None, "Unknown"] else 0
-    for key in id_filtered_movies["elements"]:
-        lt.add_last(ans, get_data(catalog, key, requirements))
-    """"    
+    
     if id_filtered_movies["size"]>20:
         size = id_filtered_movies["size"]
         search = [0,1,2,3,4,size-5,size-4,size-3,size-2,size-1]
         for i in search:
-            lt.add_last(ans, get_data(catalog, requirements))
+            lt.add_last(ans, get_data(catalog, id_filtered_movies["elements"][i], requirements))
     else:
-        for i in id_filtered_movies["elements"]:
-            lt.add_last(ans, get_data(catalog, catalog["id"]["elements"][i], requirements))
-    """
+        for key in id_filtered_movies["elements"]:
+            lt.add_last(ans, get_data(catalog, key, requirements))
+            
     if id_filtered_movies["size"] != 0:
         average_duration = total_duration/id_filtered_movies["size"]
     else:
