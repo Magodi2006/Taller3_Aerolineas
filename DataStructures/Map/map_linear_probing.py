@@ -334,7 +334,7 @@ def rehash(my_map):
         'limit_factor': my_map['limit_factor'],
         'size': 0,
         'type': my_map['type']
-    }
+    }   
     
     for _ in range(new_capacity):
         entry = me.new_map_entry(None, None)
