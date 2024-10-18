@@ -226,32 +226,33 @@ def req_6(catalog, language, start_year, end_year):
     return result
 
 
-def req_7(catalog):
+def req_7(catalog, name_companie, start_year, end_year):
     """
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
-    resultado = {}
-    for pelicula in catalog['peliculas']:
-        anio = int(pelicula['release_date'].split('-')[0])
-        if compania in pelicula['production_companies'] and anio_inicio <= anio <= anio_fin:
-            if anio not in resultado:
-                resultado[anio] = {
-                    'total_peliculas': 0,
-                    'total_duracion': 0,
-                    'total_ganancias': 0,
-                    'mejor_pelicula': ('', -float('inf')),
-                    'peor_pelicula': ('', float('inf'))
-                }
-            resultado[anio]['total_peliculas'] += 1
-            resultado[anio]['total_duracion'] += pelicula['runtime']
-            resultado[anio]['total_ganancias'] += pelicula['revenue'] - pelicula['budget']
-            if pelicula['vote_average'] > resultado[anio]['mejor_pelicula'][1]:
-                resultado[anio]['mejor_pelicula'] = (pelicula['title'], pelicula['vote_average'])
-            if pelicula['vote_average'] < resultado[anio]['peor_pelicula'][1]:
-                resultado[anio]['peor_pelicula'] = (pelicula['title'], pelicula['vote_average'])
+    result = {}
+    for couple in catalog['table']["elements"]:
+        if couple["key"]:
+            year = int(couple["value"]['release_date'].split('-')[0])
+            if any(name_companie.lower() in company[1].lower() for company in couple["value"]['production_companies']) and start_year <= year <= end_year:
+                if year not in result:
+                    result[year] = {
+                        'total_peliculas': 0,
+                        'total_duracion': 0,
+                        'total_ganancias': 0,
+                        'mejor_pelicula': ('', -float('inf')),
+                        'peor_pelicula': ('', float('inf'))
+                    }
+                result[year]['total_peliculas'] += 1
+                result[year]['total_duracion'] += couple["value"]['runtime']
+                result[year]['total_ganancias'] += couple["earnings"]["earnings"]
+                if couple["value"]['vote_average'] > result[year]['mejor_pelicula'][1]:
+                    result[year]['mejor_pelicula'] = (couple["value"]['title'], couple["value"]['vote_average'])
+                if couple["value"]['vote_average'] < result[year]['peor_pelicula'][1]:
+                    result[year]['peor_pelicula'] = (couple["value"]['title'], couple["value"]['vote_average'])
 
-    return resultado
+    return result
 
 
 def req_8(catalog):
