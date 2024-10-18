@@ -192,7 +192,7 @@ def req_6(catalog, language, start_year, end_year):
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
-    result = lt.new_list()
+    result = {}
     for couple in catalog["table"]["elements"]:
         if couple["key"] != None:
             original_language = couple["value"]["original_language"]
@@ -202,28 +202,27 @@ def req_6(catalog, language, start_year, end_year):
                 year = int(date.split('-')[0])
                 if original_language == language and start_year <= year <= end_year:
                     if year not in result:
-                        year = {
+                        result[year] = {
                             'total_peliculas': 0,
                             'total_duracion': 0,
                             'total_ganancias': 0,
                             'mejor_pelicula': [None, float(couple["value"]["vote_average"])-1],
                             'peor_pelicula': [None, float(couple["value"]["vote_average"])+1]
                         }
-                        lt.add_last(result, year)
-                    duration = couple["value"]["runtime"]
-                    earnings = couple["value"]["earnings"]
+                    duration = couple["value"]["runtime"] if couple["value"]["runtime"] not in ["", None, "Unknown"] else 0
+                    earnings = couple["value"]["earnings"] if couple["value"]["earnings"] not in ["", None, "Unknown"] else 0
                     
-                    year['total_peliculas'] += 1
-                    year['total_duracion'] += float(duration)
-                    year['total_ganancias'] += earnings
+                    result[year]['total_peliculas'] += 1
+                    result[year]['total_duracion'] += float(duration)
+                    result[year]['total_ganancias'] += earnings
                     
-                    calificacion = float(couple["value"]["vote_average"])
-                    if calificacion > year['mejor_pelicula'][1]:
-                        year['mejor_pelicula'][1] = calificacion 
-                        year["mejor_pelicula"][0] = couple["value"]["title"]
-                    if calificacion < year['peor_pelicula'][1]:
-                        year['peor_pelicula'][1] = calificacion
-                        year["peor_pelicula"][0] = couple["value"]["title"]
+                    calificacion = float(couple["value"]["vote_average"]) if couple["value"]["vote_average"] not in ["", None, "Unknown"] else 0
+                    if calificacion > result[year]['mejor_pelicula'][1]:
+                        result[year]['mejor_pelicula'][1] = calificacion 
+                        result[year]["mejor_pelicula"][0] = couple["value"]["title"]
+                    if calificacion < result[year]['peor_pelicula'][1]:
+                        result[year]['peor_pelicula'][1] = calificacion
+                        result[year]["peor_pelicula"][0] = couple["value"]["title"]
     return result
 
 

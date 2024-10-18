@@ -31,7 +31,7 @@ def load_data(control):
     Carga los datos
     """
     # Realizar la carga de datos
-    filename = input("Ingrese el nombre del archivo CSV a cargar: ")
+
     control = l.load_data(control, "Data/Challenge-2/movies-small.csv")
     print(f"Se cargaron {control["size"]} películas en el catálogo.")
     return control
@@ -124,10 +124,21 @@ def print_req_6(control):
     end_year = int(input("Ingrese el año final: "))
     tiempo_inicial = time.time()
     result = l.req_6(control, language, start_year, end_year)
-    headers = [""]
     tiempo_final = time.time()
-    if result["size"] != 0:
-        print(tabulate(result["elements"], headers, tablefmt="github"))
+    headers = ["year", "total movies", "total duration", "total earnings", "best movie (rating)", "worst movie (rating)"]
+    ans = []
+    if result != {}:
+        for year in range(start_year, end_year+1):
+            data = [
+            year,
+            result[year]['total_peliculas'],
+            result[year]['total_duracion'],
+            result[year]['total_ganancias'],
+            f"{result[year]['mejor_pelicula'][0]} ({result[year]['mejor_pelicula'][1]})",
+            f"{result[year]['peor_pelicula'][0]} ({result[year]['peor_pelicula'][1]})"
+                ]
+            ans.append(data)
+        print(tabulate(ans, headers , tablefmt="github"))
     else:
         print(f"No se encontraron resultados para el idioma '{language}' entre {start_year} y {end_year}.")
     print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
