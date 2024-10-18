@@ -64,7 +64,6 @@ def print_req_1(control):
     tiempo_inicial = time.time()
     result, size, requirements = l.req_1(control, name, language)
     tiempo_final = time.time()
-    print(result)
     if size == 0:
         print("No se encontraron películas que cumplieran con los criterios")
     else:
