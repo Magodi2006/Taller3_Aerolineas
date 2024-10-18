@@ -613,7 +613,7 @@ def merge_sort(my_list, sort_crit):
         left_elements = size(left_list)
         right_elements = size(right_list)
 
-        while (i < left_elements) and (j < righ_telements):
+        while (i < left_elements) and (j < right_elements):
             elem_i = get_element(left_list, i)
             elem_j = get_element(right_list, j)
             # compara y ordena los elementos

@@ -5,6 +5,12 @@ import datetime
 from DataStructures.Map import map_linear_probing as lp
 from DataStructures.List import array_list as lt
 
+def sort_criteria_increasingly(element1, element2):
+    is_sorted = False
+    if element1 <= element2:
+        is_sorted = True
+    return is_sorted
+
 def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
@@ -56,7 +62,6 @@ def load_data(catalog, filename):
                 else:
                     value["earnings"] = "Undefined"
         lp.put(catalog, key, value)
-    print(catalog)
     return catalog
 
 # Funciones de consulta sobre el catálogo
@@ -125,6 +130,7 @@ def req_3(catalog, language, start_date, end_date):
                 total_duration += float(couple["value"]["runtime"])
     for key in id_filtered_movies["elements"]:
         lt.add_last(ans, get_data(catalog, key, requirements))
+
     """"    
     if id_filtered_movies["size"]>20:
         size = id_filtered_movies["size"]
@@ -214,7 +220,7 @@ def req_6(catalog, language, start_year, end_year):
                     
                     result[year]['total_peliculas'] += 1
                     result[year]['total_duracion'] += float(duration)
-                    result[year]['total_ganancias'] += earnings
+                    result[year]['total_ganancias'] += float(earnings)
                     
                     calificacion = float(couple["value"]["vote_average"]) if couple["value"]["vote_average"] not in ["", None, "Unknown"] else 0
                     if calificacion > result[year]['mejor_pelicula'][1]:
@@ -233,54 +239,64 @@ def req_7(catalog, name_companie, start_year, end_year):
     # TODO: Modificar el requerimiento 7
     result = {}
     for couple in catalog['table']["elements"]:
-        if couple["key"]:
+        if couple["key"] != None:
             year = int(couple["value"]['release_date'].split('-')[0])
-            if any(name_companie.lower() in company[1].lower() for company in couple["value"]['production_companies']) and start_year <= year <= end_year:
-                if year not in result:
-                    result[year] = {
-                        'total_peliculas': 0,
-                        'total_duracion': 0,
-                        'total_ganancias': 0,
-                        'mejor_pelicula': ('', -float('inf')),
-                        'peor_pelicula': ('', float('inf'))
-                    }
-                result[year]['total_peliculas'] += 1
-                result[year]['total_duracion'] += couple["value"]['runtime']
-                result[year]['total_ganancias'] += couple["earnings"]["earnings"]
-                if couple["value"]['vote_average'] > result[year]['mejor_pelicula'][1]:
-                    result[year]['mejor_pelicula'] = (couple["value"]['title'], couple["value"]['vote_average'])
-                if couple["value"]['vote_average'] < result[year]['peor_pelicula'][1]:
-                    result[year]['peor_pelicula'] = (couple["value"]['title'], couple["value"]['vote_average'])
+            for company in couple["value"]['production_companies']["elements"]:
+                if name_companie.lower() == company[1].lower() and start_year <= year <= end_year:
+                    if year not in result:
+                        result[year] = {
+                            'total_peliculas': 0,
+                            'total_duracion': 0,
+                            'total_ganancias': 0,
+                            'mejor_pelicula': ('', -float('inf')),
+                            'peor_pelicula': ('', float('inf'))
+                        }
+                    vote_average = float(couple["value"]['vote_average']) if couple["value"]['vote_average'] not in [None, "", "Unknown"] else 0
+                    runtime = float(couple["value"]['runtime']) if couple["value"]['runtime'] not in [None, "", "Unknown"] else 0
+                    earnings = float(couple["value"]["earnings"]) if couple["value"]["earnings"] not in [None, "", "Undefined"] else 0
+                    result[year]['total_peliculas'] += 1
+                    result[year]['total_duracion'] += runtime
+                    result[year]['total_ganancias'] += earnings
+                    if vote_average > result[year]['mejor_pelicula'][1]:
+                        result[year]['mejor_pelicula'] = (couple["value"]['title'], vote_average)
+                    if vote_average < result[year]['peor_pelicula'][1]:
+                        result[year]['peor_pelicula'] = (couple["value"]['title'], vote_average)
 
     return result
 
 
-def req_8(catalog):
+def req_8(catalog, name_genre, start_year):
     """
     Retorna el resultado del requerimiento 8
     """
     # TODO: Modificar el requerimiento 8
-    resultado = {}
-    for pelicula in catalog['peliculas']:
-        anio = int(pelicula['release_date'].split('-')[0])
-        if genero in pelicula['genres'] and anio >= anio_inicio:
-            if anio not in resultado:
-                resultado[anio] = {
-                    'total_peliculas': 0,
-                    'total_duracion': 0,
-                    'total_ganancias': 0,
-                    'mejor_pelicula': ('', -float('inf')),
-                    'peor_pelicula': ('', float('inf'))
-                }
-            resultado[anio]['total_peliculas'] += 1
-            resultado[anio]['total_duracion'] += pelicula['runtime']
-            resultado[anio]['total_ganancias'] += pelicula['revenue'] - pelicula['budget']
-            if pelicula['vote_average'] > resultado[anio]['mejor_pelicula'][1]:
-                resultado[anio]['mejor_pelicula'] = (pelicula['title'], pelicula['vote_average'])
-            if pelicula['vote_average'] < resultado[anio]['peor_pelicula'][1]:
-                resultado[anio]['peor_pelicula'] = (pelicula['title'], pelicula['vote_average'])
+    result = {}
+    for couple in catalog["table"]["elements"]:
+        if couple["key"] != None:
+            year = int(couple["value"]['release_date'].split('-')[0])
+            for genre in couple["value"]["genres"]["elements"]:
+                if name_genre.lower() == genre[1].lower() and year >= start_year and couple["value"]["status"]=="Released":
+                    print("Te falta calle")
+                    if year not in result:
+                        result[year] = {
+                            'total_peliculas': 0,
+                            'total_duracion': 0,
+                            'total_ganancias': 0,
+                            'mejor_pelicula': ('', -float('inf')),
+                            'peor_pelicula': ('', float('inf'))
+                        }
+                    duration = float(couple["value"]['runtime']) if couple["value"]['runtime'] not in [None, "", "Unknown"] else 0
+                    earnings = float(couple["value"]["earnings"]) if couple["value"]["earnings"] not in [None, "", "Undefined"] else 0
+                    rating = float(couple["value"]['vote_average']) if couple["value"]['vote_average'] not in [None, "", "Unknown"] else 0
+                    result[year]['total_peliculas'] += 1
+                    result[year]['total_duracion'] += duration
+                    result[year]['total_ganancias'] += earnings
+                    if rating > float(result[year]['mejor_pelicula'][1]):
+                        result[year]['mejor_pelicula'] = (couple["value"]['title'], couple["value"] ['vote_average'])
+                    if rating < float(result[year]['peor_pelicula'][1]):
+                        result[year]['peor_pelicula'] = (couple["value"]['title'], couple["value"]['vote_average'])
 
-    return resultado
+    return result
 
 
 # Funciones para medir tiempos de ejecucion

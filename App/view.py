@@ -2,7 +2,7 @@ import sys
 import App.logic as l
 from tabulate import tabulate
 import time as time
-
+from DataStructures.List import array_list as lt
 
 
 def new_logic():
@@ -150,24 +150,29 @@ def print_req_7(control):
         Función que imprime la solución del Requerimiento 7 en consola
     """
     #  Imprimir el resultado del requerimiento 7
-    compania = input("Ingrese la compañía productora: ")
-    anio_inicio = int(input("Ingrese el año de inicio: "))
-    anio_fin = int(input("Ingrese el año final: "))
+    company = input("Ingrese la compañía productora: ")
+    start_year = int(input("Ingrese el año de inicio: "))
+    end_year = int(input("Ingrese el año final: "))
     tiempo_inicial = time.time()
-    resultado = l.req_7(control, compania, anio_inicio, anio_fin)  # Pasar correctamente los parámetros
+    result = l.req_7(control, company, start_year, end_year)  # Pasar correctamente los parámetros
     tiempo_final = time.time()
-    
-    if resultado:
-        for anio, datos in resultado.items():
-            print(f"Año: {anio}")
-            print(f"Total películas: {datos['total_peliculas']}")
-            print(f"Duración total: {datos['total_duracion']} minutos")
-            print(f"Ganancias totales: ${datos['total_ganancias']}")
-            print(f"Mejor película: {datos['mejor_pelicula'][0]} con calificación {datos['mejor_pelicula'][1]}")
-            print(f"Peor película: {datos['peor_pelicula'][0]} con calificación {datos['peor_pelicula'][1]}")
-            print("-------------------------------------------------------")
+    ans = []
+    headers = ["year", "total movies", "total duration", "total earnings", "best movie (rating)", "worst movie (rating)"]
+    if result:
+        for year in result:
+            stats = [
+                year,
+                result[year]['total_peliculas'],
+                result[year]['total_duracion'],
+                result[year]['total_ganancias'],
+                f"{result[year]['mejor_pelicula'][0]} ({result[year]['mejor_pelicula'][1]})",
+                f"{result[year]['peor_pelicula'][0]} ({result[year]['peor_pelicula'][1]})"
+                ]
+            ans.append(stats)
+            lt.merge_sort(ans, sort_criteria_increasingly)
+            print(tabulate(ans, headers, tablefmt="github"))
     else:
-        print(f"No se encontraron resultados para la compañía '{compania}' entre los años {anio_inicio} y {anio_fin}.")
+        print(f"No se encontraron resultados para la compañía '{company}' entre los años {start_year} y {end_year}.")
     print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
 
 
@@ -178,22 +183,23 @@ def print_req_8(control):
     """
     #  Imprimir el resultado del requerimiento 8
     genero = input("Ingrese el género: ")
-    anio_inicio = int(input("Ingrese el año de inicio: "))
+    start_year = int(input("Ingrese el año de inicio: "))
     tiempo_inicial = time.time()
-    resultado = l.req_8(control, genero, anio_inicio)  # Pasar correctamente los parámetros
+    resultado = l.req_8(control, genero, start_year)  # Pasar correctamente los parámetros
     tiempo_final = time.time()
     
     if resultado:
-        for anio, datos in resultado.items():
-            print(f"Año: {anio}")
-            print(f"Total películas: {datos['total_peliculas']}")
-            print(f"Duración total: {datos['total_duracion']} minutos")
-            print(f"Ganancias totales: ${datos['total_ganancias']}")
-            print(f"Mejor película: {datos['mejor_pelicula'][0]} con calificación {datos['mejor_pelicula'][1]}")
-            print(f"Peor película: {datos['peor_pelicula'][0]} con calificación {datos['peor_pelicula'][1]}")
-            print("-------------------------------------------------------")
+        for year in range(start_year, start_year+1000):
+            if year in resultado:
+                    print(f"Año: {year}")
+                    print(f"Total películas: {resultado[year]['total_peliculas']}")
+                    print(f"Duración total: {resultado[year]['total_duracion']} minutos")
+                    print(f"Ganancias totales: ${resultado[year]['total_ganancias']}")
+                    print(f"Mejor película: {resultado[year]['mejor_pelicula'][0]} con calificación {resultado[year]['mejor_pelicula'][1]}")
+                    print(f"Peor película: {resultado[year]['peor_pelicula'][0]} con calificación {resultado[year]['peor_pelicula'][1]}")
+                    print("-------------------------------------------------------")
     else:
-        print(f"No se encontraron resultados para el género '{genero}' desde el año {anio_inicio}.")
+        print(f"No se encontraron resultados para el género '{genero}' desde el año {start_year}.")
     print(f"Tiempo de ejecución: {l.delta_time(tiempo_inicial, tiempo_final)} ms")
 
 
