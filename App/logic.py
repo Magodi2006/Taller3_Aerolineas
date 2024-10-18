@@ -89,14 +89,15 @@ def req_1(catalog, name, language):
     # TODO: Modificar el requerimiento 1
     requirements = ["runtime", "release_date", "revenue", "budget", "earnings", "vote_average", "original_language"]
     filtro = lt.new_list()
+    ans = None
     for movie in catalog["table"]["elements"]:
         if movie["value"] != None:
             if movie["value"]["original_language"] == language and movie["value"]["title"].lower() == name.lower():
                 lt.add_last(filtro, movie["key"])
     for key in filtro["elements"]:
-        print(key)
         ans = get_data(catalog, key, requirements)
-        
+    if ans == None:
+        ans = []
     return ans, filtro["size"], requirements
     
 
