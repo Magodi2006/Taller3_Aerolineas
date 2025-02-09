@@ -36,7 +36,7 @@ def load_data(control):
     """
     # Realizar la carga de datos
 
-    control = l.load_data(control, "Data/Challenge-2/movies-small.csv")
+    control = l.load_data(control, "Data/movies-large.csv")
     f = 0
     g=0
     
@@ -195,7 +195,6 @@ def print_req_7(control):
                 f"{result[year]['peor_pelicula'][0]} ({result[year]['peor_pelicula'][1]})"
                 ]
             ans.append(stats)
-            lt.merge_sort(ans, sort_criteria_increasingly)
             print(tabulate(ans, headers, tablefmt="github"))
     else:
         print(f"No se encontraron resultados para la compañía '{company}' entre los años {start_year} y {end_year}.")
